@@ -19,7 +19,8 @@ func main() {
 	reader := bufio.NewReader(file)
 
 	for {
-		line, _, err := reader.ReadLine()
+		lineBytes, _, err := reader.ReadLine()
+		line := string(lineBytes)
 
 		if err == io.EOF {
 			break

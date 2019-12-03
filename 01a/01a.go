@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 )
 
 // Entry point
@@ -18,14 +19,26 @@ func main() {
 
 	reader := bufio.NewReader(file)
 
+	fuelSum := 0
+
 	for {
-		line, _, err := reader.ReadLine()
+		lineBytes, _, err := reader.ReadLine()
+		line := string(lineBytes)
 
 		if err == io.EOF {
 			break
 		}
 
-		fmt.Printf("%s \n", line)
-	}
+		moduleMass, err := strconv.Atoi(line)
 
+		fuelSum += calculateFuel(moduleMass)
+
+	}
+	fmt.Printf("Calculated fuel to carry modules: %d", fuelSum)
+
+}
+
+func calculateFuel(moduleMass int) int {
+
+	return moduleMass / 3 - 2
 }

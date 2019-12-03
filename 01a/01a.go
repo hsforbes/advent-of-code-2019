@@ -35,10 +35,15 @@ func main() {
 
 	}
 	fmt.Printf("Calculated fuel to carry modules: %d", fuelSum)
-
+	// 3268951
 }
 
-func calculateFuel(moduleMass int) int {
+func calculateFuel(unaccountedMass int) int {
+	fuelReq := unaccountedMass / 3 - 2
 
-	return moduleMass / 3 - 2
+	if fuelReq < 3 {
+		return fuelReq
+	} else {
+		return fuelReq + calculateFuel(fuelReq)
+	}
 }

@@ -28,22 +28,45 @@ func main() {
 			break
 		}
 
-		fmt.Printf("%s \n", line)
+		// fmt.Printf("%s \n", line)
 
 		inputStrings := strings.Split(line, ",")
-		inputInts := makeIntInput(inputStrings)
+		program := makeIntInput(inputStrings)
 
-		runIntcode(inputInts, 0)
-		// 234699 too low
+		findNounAndVerb(program, 19690720)
 	}
+}
+
+func findNounAndVerb(program []int, desiredOutput int) {
+
+	originalProgram := cloneSlice(program)
+
+	for noun := 0; noun < 100; noun++ {
+		for verb := 0; verb < 100; verb++ {
+
+			program := cloneSlice(originalProgram)
+			program[1] = noun
+			program[2] = verb
+			programOutput := runIntcode(program, 0)
+			// fmt.Printf("\nProgram output: %d", programOutput[0])
+			if programOutput[0] == desiredOutput {
+				fmt.Println("Found noun and verb for desired output.")
+				fmt.Printf("Noun: %d\tVerb: %d", noun, verb)
+			}
+		}
+	}
+}
+
+func cloneSlice(inputSlice []int) []int {
+	return append(inputSlice[:0:0], inputSlice...)
 }
 
 func runIntcode(program []int, opcodePosition int) []int {
 	opcode := program[opcodePosition]
 
 	if opcode == 99 {
-		fmt.Println("Found opcode 99. Stopping. Final program state:")
-		fmt.Println(program)
+		// fmt.Println("Found opcode 99. Stopping. Final program state:")
+		// fmt.Println(program)
 		return program
 	} else if opcode == 1 {
 		program[program[opcodePosition+3]] = program[program[opcodePosition+1]] + program[program[opcodePosition+2]]

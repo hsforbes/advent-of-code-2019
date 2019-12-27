@@ -19,20 +19,14 @@ func main() {
 	}
 
 	reader := bufio.NewReader(file)
-	line := readLine(reader)
+	line1 := readLine(reader)
+	line2 := readLine(reader)
 
-	// fmt.Printf("%s \n", line)
+	wire1Path := makeWirePath(line1)
+	wire2Path := makeWirePath(line2)
 
-	// inputStrings := strings.Split(line, ",")
-	wire1Path := makeWirePath(line)
-	wire1Grid := makeGrid(wire1Path)
-
-	// Read Wire 2
-	line = readLine(reader)
-	wire2Path := makeWirePath(line)
-	wire2Grid := makeGrid(wire2Path)
-
-	gridWithIntersections := makeGridWithIntersections(wire1Grid, wire2Grid)
+	maxDimensions := findMaxDimensions(wire1Path, wire2Path)
+	gridWithIntersections := makeGridWithIntersections(maxDimensions, wire1Path, wire2Path)
 
 	findClosestIntersection(gridWithIntersections)
 }
@@ -63,16 +57,42 @@ func makeWirePath(line string) []PathStep {
 	return wirePath
 }
 
-func makeGrid(wirePath []PathStep) [][]int {
-	// TODO
+// func makeGrid(wirePath []PathStep) [][]int {
+// 	// TODO
 
-	// Maybe try generating the grid in 4 quadrants, then combining (or not)
+// 	// Maybe try generating the grid in 4 quadrants, then combining (or not)
+// 	// OR
+// 	// Maybe calculate the maximum dimensions first
+// 	return [][]int{}
+// }
+
+func makeGridWithIntersections(maxDimensions []int, wire1Path []PathStep, wire2Path []PathStep) [][]int {
+
+	// TODO
 	return [][]int{}
 }
 
-func makeGridWithIntersections(wire1Grid [][]int, wire2Grid [][]int) [][]int {
-	// TODO
-	return [][]int{}
+func findMaxDimensions(wire1Path []PathStep, wire2Path []PathStep) []int {
+	// Up, down, left, right
+	maxDimensions := []int{0, 0, 0, 0}
+
+	// x, y
+	coordinate := []int{0, 0}
+
+	for i := 0; i < len(wire1Path); i++ {
+		if strings.Compare(wire1Path[i].direction, "U") == 0 {
+			coordinate[]
+
+		} else if strings.Compare(wire1Path[i].direction, "D") == 0 {
+
+		} else if strings.Compare(wire1Path[i].direction, "L") == 0 {
+
+		} else if strings.Compare(wire1Path[i].direction, "R") == 0 {
+
+		}
+	}
+
+	return maxDimensions
 }
 
 func findClosestIntersection(gridWithIntersections [][]int) {

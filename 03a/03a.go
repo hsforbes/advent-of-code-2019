@@ -64,13 +64,17 @@ type Coordinate struct {
 }
 
 func makeCoordinatesForAllSteps(wirePath []PathStep) []Coordinate {
-	wireTipCoordinate := Coordinate{x: 0, y: 0}
 	wireCoordinates := make([]Coordinate, 0)
+	wireTipCoordinate := Coordinate{x: 0, y: 0}
+
 	for i := 0; i < len(wirePath); i++ {
 		var coordinatesForOneStep []Coordinate
 		coordinatesForOneStep, wireTipCoordinate = makeCoordinatesForOneStep(wirePath[i], wireTipCoordinate)
 		wireCoordinates = append(wireCoordinates, coordinatesForOneStep...)
 	}
+
+	// remove the first element. It's the 0,0 coordinate
+	wireCoordinates = wireCoordinates[1:]
 
 	return wireCoordinates
 }
@@ -108,7 +112,6 @@ func makeCoordinatesForOneStep(pathStep PathStep, startCoordinate Coordinate) ([
 	return wireCoordinates, newWireTipCoordinate
 }
 
-// TODO Make this efficient
 func findMatchingCoordinates(wire1Coordinates []Coordinate, wire2Coordinates []Coordinate) []Coordinate {
 	matchingCoordinates := make([]Coordinate, 0)
 
@@ -127,10 +130,9 @@ func findMatchingCoordinates(wire1Coordinates []Coordinate, wire2Coordinates []C
 func findClosestIntersection(matchingCoordinates []Coordinate) {
 
 	smallestDistance := math.MaxInt32
-	// smallestDistanceCoordinate := Coordinate{x:0, y:0}
 
 	for i := 0; i < len(matchingCoordinates); i++ {
-		distance := matchingCoordinates[i].x + matchingCoordinates[i].y
+		distance := abs(matchingCoordinates[i].x) + abs(matchingCoordinates[i].y)
 		if distance < smallestDistance {
 			smallestDistance = distance
 			// smallestDistanceCoordinate = matchingCoordinates[i]
@@ -138,6 +140,14 @@ func findClosestIntersection(matchingCoordinates []Coordinate) {
 	}
 
 	fmt.Printf("\nFound smallest distance = %d", smallestDistance)
+	// 55 is wrong
+
+}
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
 }
 
 func readLine(reader *bufio.Reader) string {

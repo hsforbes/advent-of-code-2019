@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -25,10 +26,11 @@ func main() {
 	wire1Path := makeWirePath(line1)
 	wire2Path := makeWirePath(line2)
 
-	maxDimensions := findMaxDimensions(wire1Path, wire2Path)
-	gridWithIntersections := makeGridWithIntersections(maxDimensions, wire1Path, wire2Path)
+	wire1Coordinates := makeCoordinatesForAllSteps(wire1Path)
+	wire2Coordinates := makeCoordinatesForAllSteps(wire2Path)
 
-	findClosestIntersection(gridWithIntersections)
+	matchingCoordinates := findMatchingCoordinates(wire1Coordinates, wire2Coordinates)
+	findClosestIntersection(matchingCoordinates)
 }
 
 type PathStep struct {
@@ -57,46 +59,85 @@ func makeWirePath(line string) []PathStep {
 	return wirePath
 }
 
-// func makeGrid(wirePath []PathStep) [][]int {
-// 	// TODO
-
-// 	// Maybe try generating the grid in 4 quadrants, then combining (or not)
-// 	// OR
-// 	// Maybe calculate the maximum dimensions first
-// 	return [][]int{}
-// }
-
-func makeGridWithIntersections(maxDimensions []int, wire1Path []PathStep, wire2Path []PathStep) [][]int {
-
-	// TODO
-	return [][]int{}
+type Coordinate struct {
+	x, y int
 }
 
-func findMaxDimensions(wire1Path []PathStep, wire2Path []PathStep) []int {
-	// Up, down, left, right
-	maxDimensions := []int{0, 0, 0, 0}
+func makeCoordinatesForAllSteps(wirePath []PathStep) []Coordinate {
+	wireTipCoordinate := Coordinate{x: 0, y: 0}
+	wireCoordinates := make([]Coordinate, 0)
+	for i := 0; i < len(wirePath); i++ {
+		var coordinatesForOneStep []Coordinate
+		coordinatesForOneStep, wireTipCoordinate = makeCoordinatesForOneStep(wirePath[i], wireTipCoordinate)
+		wireCoordinates = append(wireCoordinates, coordinatesForOneStep...)
+	}
 
-	// x, y
-	coordinate := []int{0, 0}
+	return wireCoordinates
+}
 
-	for i := 0; i < len(wire1Path); i++ {
-		if strings.Compare(wire1Path[i].direction, "U") == 0 {
-			coordinate[]
+func makeCoordinatesForOneStep(pathStep PathStep, startCoordinate Coordinate) ([]Coordinate, Coordinate) {
+	wireCoordinates := make([]Coordinate, 0)
+	var newWireTipCoordinate = startCoordinate
 
-		} else if strings.Compare(wire1Path[i].direction, "D") == 0 {
-
-		} else if strings.Compare(wire1Path[i].direction, "L") == 0 {
-
-		} else if strings.Compare(wire1Path[i].direction, "R") == 0 {
-
+	if strings.Compare(pathStep.direction, "U") == 0 {
+		newWireTipCoordinate.y = startCoordinate.y + pathStep.magnitude
+		for i := 0; i < pathStep.magnitude; i++ {
+			newCoordinate := Coordinate{x: startCoordinate.x, y: startCoordinate.y + i}
+			wireCoordinates = append(wireCoordinates, newCoordinate)
+		}
+	} else if strings.Compare(pathStep.direction, "D") == 0 {
+		newWireTipCoordinate.y = startCoordinate.y - pathStep.magnitude
+		for i := 0; i < pathStep.magnitude; i++ {
+			newCoordinate := Coordinate{x: startCoordinate.x, y: startCoordinate.y - i}
+			wireCoordinates = append(wireCoordinates, newCoordinate)
+		}
+	} else if strings.Compare(pathStep.direction, "L") == 0 {
+		newWireTipCoordinate.x = startCoordinate.x - pathStep.magnitude
+		for i := 0; i < pathStep.magnitude; i++ {
+			newCoordinate := Coordinate{x: startCoordinate.x - i, y: startCoordinate.y}
+			wireCoordinates = append(wireCoordinates, newCoordinate)
+		}
+	} else if strings.Compare(pathStep.direction, "R") == 0 {
+		newWireTipCoordinate.x = startCoordinate.x + pathStep.magnitude
+		for i := 0; i < pathStep.magnitude; i++ {
+			newCoordinate := Coordinate{x: startCoordinate.x + i, y: startCoordinate.y}
+			wireCoordinates = append(wireCoordinates, newCoordinate)
 		}
 	}
 
-	return maxDimensions
+	return wireCoordinates, newWireTipCoordinate
 }
 
-func findClosestIntersection(gridWithIntersections [][]int) {
-	// fmt.Println("The end")
+// TODO Make this efficient
+func findMatchingCoordinates(wire1Coordinates []Coordinate, wire2Coordinates []Coordinate) []Coordinate {
+	matchingCoordinates := make([]Coordinate, 0)
+
+	for i := 0; i < len(wire1Coordinates); i++ {
+		for j := 0; j < len(wire2Coordinates); j++ {
+			if wire1Coordinates[i].x == wire2Coordinates[j].x {
+				if wire1Coordinates[i].y == wire2Coordinates[j].y {
+					matchingCoordinates = append(matchingCoordinates, wire1Coordinates[i])
+				}
+			}
+		}
+	}
+	return matchingCoordinates
+}
+
+func findClosestIntersection(matchingCoordinates []Coordinate) {
+
+	smallestDistance := math.MaxInt32
+	// smallestDistanceCoordinate := Coordinate{x:0, y:0}
+
+	for i := 0; i < len(matchingCoordinates); i++ {
+		distance := matchingCoordinates[i].x + matchingCoordinates[i].y
+		if distance < smallestDistance {
+			smallestDistance = distance
+			// smallestDistanceCoordinate = matchingCoordinates[i]
+		}
+	}
+
+	fmt.Printf("\nFound smallest distance = %d", smallestDistance)
 }
 
 func readLine(reader *bufio.Reader) string {

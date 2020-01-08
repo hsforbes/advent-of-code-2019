@@ -30,7 +30,7 @@ func main() {
 	wire2Coordinates := makeCoordinatesForAllSteps(wire2Path)
 
 	matchingCoordinates := findMatchingCoordinates(wire1Coordinates, wire2Coordinates)
-	findShortestIntersection(matchingCoordinates)
+	findClosestIntersection(matchingCoordinates)
 }
 
 type PathStep struct {
@@ -127,9 +127,8 @@ func findMatchingCoordinates(wire1Coordinates []Coordinate, wire2Coordinates []C
 	return matchingCoordinates
 }
 
-func findShortestIntersection(matchingCoordinates []Coordinate) {
+func findClosestIntersection(matchingCoordinates []Coordinate) {
 
-	// Set it to the max int and look for something smaller
 	smallestDistance := math.MaxInt32
 
 	for i := 0; i < len(matchingCoordinates); i++ {
